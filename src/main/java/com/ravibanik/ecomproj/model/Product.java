@@ -1,4 +1,4 @@
-package com.telusko.ecomproj.model;
+package com.ravibanik.ecomproj.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,18 +16,16 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
+    @Column(nullable = false)
     private String name;
-    private String desc;
+    private String description;
     private String brand;
-    private BigDecimal price;
+    @Column(nullable = false)
+    private Double price;
     private String category;
     private Date releaseDate;
     private boolean available;
     private int stockQuantity;
-
-    private String imageName;
-    private String imageType;
-    @Lob
-    private byte[] imageData;
+    private String imageUrl;
 }

@@ -1,4 +1,4 @@
-package com.telusko.ecomproj;
+package com.ravibanik.ecomproj;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
