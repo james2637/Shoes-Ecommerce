@@ -1,6 +1,7 @@
 package com.ravibanik.ecomproj.controller;
 
-import com.ravibanik.ecomproj.model.Product;
+import com.ravibanik.ecomproj.dto.ProductDto;
+import com.ravibanik.ecomproj.entity.Product;
 import com.ravibanik.ecomproj.service.ImageUploadService;
 import com.ravibanik.ecomproj.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -24,19 +27,15 @@ public class ProductController {
 
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "inr") String currency) {
 
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getAllProducts(currency), HttpStatus.OK);
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable long id) {
-        Product product = productService.getProduct(id);
-        if (product != null) {
-            return new ResponseEntity<>(product, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ProductDto> getProduct(@PathVariable long id, @RequestParam(defaultValue = "inr") String currency) {
+        ProductDto product = productService.getProduct(id, currency);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PostMapping("/product/create")
@@ -55,5 +54,21 @@ public class ProductController {
         }
     }
 
+    @DeleteMapping("/product/delete/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
+
+    }
+
+    @PutMapping("/product/update/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable long id, @RequestBody Product updatedProduct) {
+        Product product = productService.updateProduct(id, updatedProduct);
+        if (product != null) {
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

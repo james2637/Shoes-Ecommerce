@@ -1,6 +1,6 @@
 package com.ravibanik.ecomproj.repo;
 
-import com.ravibanik.ecomproj.model.Product;
+import com.ravibanik.ecomproj.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
