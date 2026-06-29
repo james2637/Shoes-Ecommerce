@@ -20,5 +20,5 @@ public class ExchangeRateResponseDto {
     private String lastTimeUpdate;
 
     @JsonProperty("conversion_result")
-    private double conversionResult;
+    private double conversionResult;       // we will fetch this value on getExchangeRate method
 }
