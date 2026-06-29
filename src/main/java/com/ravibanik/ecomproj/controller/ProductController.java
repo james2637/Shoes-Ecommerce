@@ -26,19 +26,19 @@ public class ProductController {
     private ImageUploadService imageUploadService;
 
 
-    @GetMapping("/products")
+    @GetMapping("/public/products")
     public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(defaultValue = "inr") String currency) {
 
         return new ResponseEntity<>(productService.getAllProducts(currency), HttpStatus.OK);
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/public/product/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id, @RequestParam(defaultValue = "inr") String currency) {
         ProductDto product = productService.getProduct(id, currency);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @PostMapping("/product/create")
+    @PostMapping("/admin/product/create")
     public ResponseEntity<Product> createProduct(@RequestPart Product product, @RequestParam("image") MultipartFile imagefile) {
 
         try {
@@ -54,14 +54,14 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/product/delete/{id}")
+    @DeleteMapping("/admin/product/delete/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();
 
     }
 
-    @PutMapping("/product/update/{id}")
+    @PutMapping("/admin/product/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable long id, @RequestBody Product updatedProduct) {
         Product product = productService.updateProduct(id, updatedProduct);
         if (product != null) {
