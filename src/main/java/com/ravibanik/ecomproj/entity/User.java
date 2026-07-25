@@ -40,11 +40,14 @@ public class User implements UserDetails {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy="user")
+    @OneToOne(mappedBy="user", cascade = CascadeType.REMOVE)
     private Cart cart;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user",  cascade = CascadeType.REMOVE)
     private List<Order> orders;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Wishlist wishlist;
 
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,

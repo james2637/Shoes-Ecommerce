@@ -20,6 +20,6 @@ public class Wishlist {
     @OneToOne()
     private User user;
 
-    @ManyToMany
+    @OneToMany
     private List<Product> products;
 }
