@@ -45,4 +45,15 @@ public class JwtService {
         return Long.valueOf(claims.getSubject());
     }
 
+    public String getUsername(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.get("email", String.class);
+    }
+
 }

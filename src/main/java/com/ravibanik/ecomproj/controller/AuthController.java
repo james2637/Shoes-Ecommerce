@@ -3,6 +3,9 @@ package com.ravibanik.ecomproj.controller;
 import com.ravibanik.ecomproj.dto.LoginRequestDto;
 import com.ravibanik.ecomproj.entity.User;
 import com.ravibanik.ecomproj.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +32,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<String> loginUser(@RequestBody LoginRequestDto loginReq){
+    private ResponseEntity<String> loginUser(@RequestBody LoginRequestDto loginReq) {
         try {
-            return ResponseEntity.ok(authService.loginUser(loginReq));
+            String token = authService.loginUser(loginReq);
+
+            Cookie cookie= new Cookie("token", token);
+            cookie.setHttpOnly(true);
+
+            return ResponseEntity.ok(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
