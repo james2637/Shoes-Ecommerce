@@ -1,17 +1,23 @@
 package com.ravibanik.ecomproj.service;
 
+import com.ravibanik.ecomproj.advices.GlobalExceptionHandler;
 import com.ravibanik.ecomproj.dto.LoginRequestDto;
+import com.ravibanik.ecomproj.dto.LoginResponseDto;
 import com.ravibanik.ecomproj.entity.User;
 import com.ravibanik.ecomproj.entity.type.RoleType;
 import com.ravibanik.ecomproj.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Set;
@@ -35,13 +41,29 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    public String loginUser(LoginRequestDto loginRequestDto){
+
+    public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
+        if (userRepo.findByUsername(loginRequestDto.getUsername()) == null) {
+            throw new AuthenticationException("Invalid username or password");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
         );
 
         User user = (User) authentication.getPrincipal();
 
-        return jwtService.generateToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        return new LoginResponseDto(user.getId(), accessToken, refreshToken);
+    }
+
+    public String getAccessToken(String refreshToken) throws AuthenticationException {
+        long userId = jwtService.getUserId(refreshToken);
+
+        User user = userRepo.findById(userId).orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid refresh token"));
+
+        return jwtService.generateAccessToken(user);
     }
 }
