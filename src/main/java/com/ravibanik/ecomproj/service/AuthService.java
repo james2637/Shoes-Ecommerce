@@ -1,25 +1,19 @@
 package com.ravibanik.ecomproj.service;
 
-import com.ravibanik.ecomproj.advices.GlobalExceptionHandler;
 import com.ravibanik.ecomproj.dto.LoginRequestDto;
 import com.ravibanik.ecomproj.dto.LoginResponseDto;
 import com.ravibanik.ecomproj.entity.User;
 import com.ravibanik.ecomproj.entity.type.RoleType;
 import com.ravibanik.ecomproj.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.websocket.AuthenticationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.naming.AuthenticationException;
 import java.util.Set;
 
 @Service
@@ -30,6 +24,7 @@ public class AuthService {
     private final UserRepo userRepo;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final SessionService sessionService;
 
     public void createUser(User user) {
         if(userRepo.findByUsername(user.getUsername()) != null){
@@ -44,7 +39,10 @@ public class AuthService {
 
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
         if (userRepo.findByUsername(loginRequestDto.getUsername()) == null) {
-            throw new AuthenticationException("Invalid username or password");
+            throw new AuthenticationException("Invalid username - username not exits");
+        }
+        if (loginRequestDto.getPassword() == null || !passwordEncoder.matches(loginRequestDto.getPassword(), userRepo.findByUsername(loginRequestDto.getUsername()).getPassword())) {
+            throw new IllegalArgumentException("password is invalid");
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -55,6 +53,7 @@ public class AuthService {
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        sessionService.generateNewSession(user,refreshToken);
 
         return new LoginResponseDto(user.getId(), accessToken, refreshToken);
     }
@@ -63,6 +62,7 @@ public class AuthService {
         long userId = jwtService.getUserId(refreshToken);
 
         User user = userRepo.findById(userId).orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid refresh token"));
+        sessionService.validateSession(refreshToken);
 
         return jwtService.generateAccessToken(user);
     }

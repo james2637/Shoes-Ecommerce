@@ -1,7 +1,6 @@
 package com.ravibanik.ecomproj.advices;
 
 import io.jsonwebtoken.JwtException;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler                                // for product not found
     public ResponseEntity<ApiErrorResponse> handleResourceNotFound(NullPointerException exception){
         ApiErrorResponse apiError = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -23,23 +22,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)        // for register
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgument( IllegalArgumentException exception){
+        ApiErrorResponse apiError = ApiErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message("Something went wrong")
+                .details(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
 
-    @ExceptionHandler(AuthenticationException.class)
+
+    @ExceptionHandler(AuthenticationException.class)                // for login
     public ResponseEntity<ApiErrorResponse> handleAuthenticationException(AuthenticationException exception) {
         ApiErrorResponse apiError = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .message("Unauthorized")
                 .details(exception.getLocalizedMessage())
-                .build();
-        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleIllegalArgument( IllegalArgumentException exception){
-        ApiErrorResponse apiError = ApiErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("User with this email already exits")
-                .details(exception.getMessage())
                 .build();
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
