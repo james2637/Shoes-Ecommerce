@@ -12,7 +12,8 @@ import Navbar from "./components/Navbar";
 import Orders from "./pages/Orders";
 import Footer from "./components/Footer";
 import Navbar2 from "./components/Navbar2";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import AdminProducts from "./pages/AdminProducts";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/admin/products" element={<AdminProducts />} />
       </Routes>
       <Footer />
     </div>

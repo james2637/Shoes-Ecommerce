@@ -38,6 +38,8 @@ public class ProductService {
         productDto.setAvailable(product.isAvailable());
         productDto.setCurrency(targetCode);
         productDto.setPrice(exchangeCurrencyService.getExchangeRate(baseCode,targetCode,product.getPrice()));
+        productDto.setReleaseDate(product.getReleaseDate());
+        productDto.setStockQuantity(product.getStockQuantity());
 
         return productDto;
     }
@@ -65,6 +67,7 @@ public class ProductService {
             product.setReleaseDate(updatedProduct.getReleaseDate());
             product.setAvailable(updatedProduct.isAvailable());
             product.setStockQuantity(updatedProduct.getStockQuantity());
+            product.setImageUrl(updatedProduct.getImageUrl());
             return productRepo.save(product);
         }).orElse(null);
     }
