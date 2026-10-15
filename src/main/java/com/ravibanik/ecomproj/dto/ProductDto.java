@@ -1,6 +1,7 @@
 package com.ravibanik.ecomproj.dto;
 
 import lombok.Data;
+import java.time.LocalDate;
 
 @Data
 public class ProductDto {
@@ -14,4 +15,6 @@ public class ProductDto {
         private String currency;
         private boolean available;
         private String imageUrl;
+        private LocalDate releaseDate;
+        private int stockQuantity;
 }

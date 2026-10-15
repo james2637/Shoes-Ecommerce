@@ -244,6 +244,12 @@ const Navbar = () => {
                   >
                     Orders
                   </p>
+                  <p
+                    className="cursor-pointer hover:text-black"
+                    onClick={() => navigate("/admin/products")}
+                  >
+                    Manage products
+                  </p>
                   <p className="cursor-pointer hover:text-black" onClick={logout}>
                     Logout
                   </p>
